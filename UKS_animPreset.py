@@ -1,7 +1,5 @@
 import maya.cmds as mc
 
-import maya.cmds as mc
-
 actionAnim = 2
 fpsDesired = 24
 fromFrameNum = 0
