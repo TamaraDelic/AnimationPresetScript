@@ -73,14 +73,14 @@ def Names():
     lowArm = '_LowerArm'
     wrist = '_Wrist'
     thigh = '_Thigh'
-    knee = '_Knee'
-    foot = '_Foot'
-    toes = '_Toes'
+    knee = '_Knee'##mozda ne treba
+    foot = '_Foot'##mozda ne treba
+    toes = '_Toes'##mozda ne treba
     
     #IK - ikLegs, ikArms
     #'CTRL_' + side + ikPart
-    ikHand = '_IK_Hand'
-    ikElbow = '_IK_Elbow_Twist'
+    ikHand = '_IK_Hand'##mozda ne treba
+    ikElbow = '_IK_Elbow_Twist'##mozda ne treba
     ikFoot = '_IK_Foot'
     ikKnee = '_IK_Knee_Twist'
     
@@ -103,15 +103,34 @@ def IDLEpose():
     global pelvis, spine, neck1, neck2, head, hair, shoulder, upArm, lowArm, wrist, thigh, knee, foot, toes, ikHand, ikElbow, ikFoot, ikKnee, thumbF, finger, lowEyeLid, upEyeLid
     global spineCount, ikLegs, fkLegs, ikArms, fkArms, thumb
     
+    LEGbase = 0.607
+    #new LEG
+    mc.spaceLocator(n = 'p')
+    mc.spaceLocator(n = 'f')
+    mc.matchTransform('p', 'BN_Pelvis', position = True)
+    mc.matchTransform('f', 'BN_R_Ankle', position = True)
+    LEGnew = (mc.getAttr('p.translateY')) - (mc.getAttr('f.translateY'))
+    mc.delete('p', 'f')
+    
+    #constant which allow different characters
+    LEGconst = LEGnew / LEGbase
+    
+    
     pelvisT = [-0.006,-0.021,0]
     pelvisR = [0.862,10.618,14.491]
-    mc.move(pelvisT[0],pelvisT[1],pelvisT[2], pelvis, wd = True)
+    mc.move(pelvisT[0]*LEGconst, pelvisT[1]*LEGconst, pelvisT[2]*LEGconst, pelvis, wd = True)
     mc.rotate(pelvisR[0],pelvisR[1],pelvisR[2], pelvis)
     
-    ####################################################-----------> STA ZA MNOGO VECI SPINECOUNT <----------##########################################################################
+    
+    spineHALF = math.floor(spineCount/2)+1
+    spineHALF = str(spineHALF)
+    spineHALF = spineHALF.split('.')[0]
+    
     spineR = [[0,3.089,-14.044], [-0.297,-4.667,-0.347], [0,-4.56,-3.254]]
-    for i in range(spineCount):
-        mc.rotate(spineR[i][0],spineR[i][1],spineR[i][2], spine + str(i+1))
+    
+    mc.rotate(spineR[0][0],spineR[0][1],spineR[0][2], spine + '1')
+    mc.rotate(spineR[1][0],spineR[1][1],spineR[1][2], spine + spineHALF)
+    mc.rotate(spineR[2][0],spineR[2][1],spineR[2][2], spine + str(spineCount))
     
     neckR = [0.149,3.313,2.577]
     headR = [5.587,7.937,2.589]
@@ -130,9 +149,9 @@ def IDLEpose():
         ikFootR = [[0,8.609,0], [0,0,0]]
         ikKneeT = [[0.091,0,0.044], [-0.11,0,0.103]]
         for k, side in enumerate(sides):
-            mc.move(ikFootT[k][0],ikFootT[k][1],ikFootT[k][2], 'CTRL_' + side + ikFoot, wd = True)
+            mc.move(ikFootT[k][0]*LEGconst, ikFootT[k][1]*LEGconst, ikFootT[k][2]*LEGconst, 'CTRL_' + side + ikFoot, wd = True)
             mc.rotate(ikFootR[k][0],ikFootR[k][1],ikFootR[k][2], 'CTRL_' + side + ikFoot)
-            mc.move(ikKneeT[k][0],ikKneeT[k][1],ikKneeT[k][2], 'CTRL_' + side + ikKnee)
+            mc.move(ikKneeT[k][0]*LEGconst, ikKneeT[k][1]*LEGconst, ikKneeT[k][2]*LEGconst, 'CTRL_' + side + ikKnee)
     else:
         print 'postaviti za FK noge idle pozu'
     
@@ -161,11 +180,11 @@ def IDLEpose():
                 mc.rotate(thumbR[k][i][0], thumbR[k][i][1], thumbR[k][i][2], 'CTRL_' + side + thumbF + str(i+1))
     
     
-    upEyeLidT = [[0,-0.091,0], [0,-0.103,0]]
-    lowEyeLidT = [[0,0.076,0], [0,0.103,0]]
-    for k, side in enumerate(sides):
-        mc.move(upEyeLidT[k][0], upEyeLidT[k][1], upEyeLidT[k][2], 'CTRL_F_' + side + upEyeLid)
-        mc.move(lowEyeLidT[k][0], lowEyeLidT[k][1], lowEyeLidT[k][2], 'CTRL_F_' + side + lowEyeLid)
+    # upEyeLidT = [[0,-0.091,0], [0,-0.103,0]]
+    # lowEyeLidT = [[0,0.076,0], [0,0.103,0]]
+    # for k, side in enumerate(sides):
+        # mc.move(upEyeLidT[k][0], upEyeLidT[k][1], upEyeLidT[k][2], 'CTRL_F_' + side + upEyeLid)
+        # mc.move(lowEyeLidT[k][0], lowEyeLidT[k][1], lowEyeLidT[k][2], 'CTRL_F_' + side + lowEyeLid)
     
     print 'IDLE POSING'
 
