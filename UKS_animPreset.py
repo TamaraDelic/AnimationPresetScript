@@ -10,6 +10,7 @@ toFrameNum = 23
 stepNum = 4
 stepCheck = False
 fpsALL = {'game' : 15, 'film' : 24, 'pal' : 25, 'ntsc' : 30, 'show' : 48, 'palf' : 50, 'ntscf' : 60}
+IDLEposing = True
 
 #GLOBAL RIG VARIABLES#
 spineCount = 3
@@ -18,6 +19,9 @@ fkLegs = True
 ikArms = True
 fkArms = True
 thumb = True
+iFace = True
+includeHair = True
+fingerCount = 5
 
 
 #GLOBAL ANIMATION VARIABLES
@@ -50,6 +54,7 @@ upEyeLid = ''
 
 #SETING GLOBAL NAMES#
 def Names():
+    global fkArms, fkLegs, ikArms, ikLegs, iFace, includeHair, fingerCount
     global pelvis, spine, neck1, neck2, head, hair, shoulder, upArm, lowArm, wrist, thigh, knee, foot, toes, ikHand, ikElbow, ikFoot, ikKnee, thumbF, finger, lowEyeLid, upEyeLid
     pelvis = 'CTRL_Pelvis'
     
@@ -62,46 +67,54 @@ def Names():
     
     #includeHair
     #hair + '_' + num, num < hairBone
-    hair = 'CTRL_Hair'
+    if(includeHair):
+        hair = 'CTRL_Hair'
     
     #'CTRL_' + side + shoulder
     shoulder = '_Shoulder'
     
     #FK - fkLegs, fkArms
     #'CTRL_FK_'+ side + fkPart
-    upArm = '_UpperArm'
-    lowArm = '_LowerArm'
-    wrist = '_Wrist'
-    thigh = '_Thigh'
-    knee = '_Knee'##mozda ne treba
-    foot = '_Foot'##mozda ne treba
-    toes = '_Toes'##mozda ne treba
+    if(fkArms):
+        upArm = '_UpperArm'
+        lowArm = '_LowerArm'
+        wrist = '_Wrist'
+    if(fkLegs):
+        thigh = '_Thigh'
+        knee = '_Knee'##mozda ne treba
+        foot = '_Foot'##mozda ne treba
+        toes = '_Toes'##mozda ne treba
     
     #IK - ikLegs, ikArms
     #'CTRL_' + side + ikPart
-    ikHand = '_IK_Hand'##mozda ne treba
-    ikElbow = '_IK_Elbow_Twist'##mozda ne treba
-    ikFoot = '_IK_Foot'
-    ikKnee = '_IK_Knee_Twist'
+    if(ikArms):
+        ikHand = '_IK_Hand'##mozda ne treba
+        ikElbow = '_IK_Elbow_Twist'##mozda ne treba
+    if(ikLegs):
+        ikFoot = '_IK_Foot'
+        ikKnee = '_IK_Knee_Twist'
     
     #thumb
     #'CTRL_' + side + thumbF + 1,2,3
-    thumbF = '_Finger_Thumb_'
+    if(thumb):
+        thumbF = '_Finger_Thumb_'
     
     #fingerCount (- 1 if thumb) - A, B, C, D ...
     #'CTRL_' + side + finger + A,B,C,D... + '_' + 1,2,3
-    finger = '_Finger_'
+    if not(thumb and (fingerCount == 1)):
+        finger = '_Finger_'
     
     #'CTRL_F_' + side + lid
-    lowEyeLid = '_LowerEyeLid'
-    upEyeLid = '_UpperEyeLid'
+    if(iFace):
+        lowEyeLid = '_LowerEyeLid'
+        upEyeLid = '_UpperEyeLid'
     
 
 
 #IDLE START POSE SETTING#    
 def IDLEpose():
     global pelvis, spine, neck1, neck2, head, hair, shoulder, upArm, lowArm, wrist, thigh, knee, foot, toes, ikHand, ikElbow, ikFoot, ikKnee, thumbF, finger, lowEyeLid, upEyeLid
-    global spineCount, ikLegs, fkLegs, ikArms, fkArms, thumb
+    global spineCount, ikLegs, fkLegs, ikArms, fkArms, thumb, iFace
     
     LEGbase = 0.607
     #new LEG
@@ -180,17 +193,19 @@ def IDLEpose():
                 mc.rotate(thumbR[k][i][0], thumbR[k][i][1], thumbR[k][i][2], 'CTRL_' + side + thumbF + str(i+1))
     
     
-    # upEyeLidT = [[0,-0.091,0], [0,-0.103,0]]
-    # lowEyeLidT = [[0,0.076,0], [0,0.103,0]]
-    # for k, side in enumerate(sides):
-        # mc.move(upEyeLidT[k][0], upEyeLidT[k][1], upEyeLidT[k][2], 'CTRL_F_' + side + upEyeLid)
-        # mc.move(lowEyeLidT[k][0], lowEyeLidT[k][1], lowEyeLidT[k][2], 'CTRL_F_' + side + lowEyeLid)
+    if(iFace):
+        upEyeLidT = [[0,-0.091,0], [0,-0.103,0]]
+        lowEyeLidT = [[0,0.076,0], [0,0.103,0]]
+        for k, side in enumerate(sides):
+            mc.move(upEyeLidT[k][0], upEyeLidT[k][1], upEyeLidT[k][2], 'CTRL_F_' + side + upEyeLid)
+            mc.move(lowEyeLidT[k][0], lowEyeLidT[k][1], lowEyeLidT[k][2], 'CTRL_F_' + side + lowEyeLid)
     
     print 'IDLE POSING'
 
 #IDLE ANIMATION KEYFRAMES SETTING#
 def IdleAnimation():
-    IDLEpose()
+    if(IDLEposing):
+        IDLEpose()
     global fromFrameNum, toFrameNum, loopADD
     
     HipsTtX = [0.0, 13.5, 27.0, 82.5, 110.25, 138.0, 144.0, 156.0, 168.0, 180.0, 192.0, 209.25, 217.875, 226.5, 243.75, 261.0, 288.0, 315.0, 321.0, 349.5, 363.75, 370.875, 378.0, 477.0, 500.0]
@@ -386,16 +401,18 @@ def RunAnimation():
     
     #fingers
 
-#LOOP IF NEEDED#
-def Loop():
+#LOOP IF NEEDED and BAKE animation#
+def Bake():
     #########################################################################-------------> setting loop but not for legs <------------------#########################################################################
     
-    global spineCount, fromFrameNum, toFrameNum
+    global spineCount, fromFrameNum, toFrameNum, loopADD
     global pelvis, spine, neck1, neck2, head, shoulder, upArm, lowArm, wrist
     mc.select(pelvis, neck1, neck2, head, 'CTRL_L'+shoulder, 'CTRL_FK_L'+upArm, 'CTRL_FK_L'+lowArm, 'CTRL_FK_L'+wrist, 'CTRL_R'+shoulder, 'CTRL_FK_R'+upArm, 'CTRL_FK_R'+lowArm, 'CTRL_FK_R'+wrist)
     for i in range(spineCount):
         mc.select(spine + str(i+1), add = True)
-    mc.setInfinity(poi = 'cycle')
+    
+    if(loopADD):
+        mc.setInfinity(poi = 'cycle')
     
     mc.bakeResults(simulation = True, t = (fromFrameNum,toFrameNum), attribute = 'rotate', disableImplicitControl = True, preserveOutsideKeys = True, removeBakedAttributeFromLayer = False, removeBakedAnimFromLayer = False, bakeOnOverrideLayer = False, minimizeRotation = True)
     
@@ -408,7 +425,7 @@ def Loop():
 #GLOBAL#
 def Animation():
     Names()
-    global actionAnim, fpsDesired, fromFrameNum, toFrameNum, stepCheck, stepNum, fpsALL, loopADD
+    global actionAnim, fpsDesired, fromFrameNum, toFrameNum, stepCheck, stepNum, fpsALL
     
     ########################################################################### ---------------> proracunati duzinu koraka i pocetne poze <------------------ ##########################################################
     
@@ -419,14 +436,13 @@ def Animation():
     else:
         RunAnimation()
     
-    if(loopADD):
-        Loop()
+    Bake()
     
     mc.currentTime(fromFrameNum)
 
 ###WINDOW FUNCTIONS### SETTING PARAMETERS ###
 def ApplyButton():
-    global actionAnim, fpsDesired, fromFrameNum, toFrameNum, stepCheck, stepNum, fpsALL
+    global actionAnim, fpsDesired, fromFrameNum, toFrameNum, stepCheck, stepNum, fpsALL, IDLEposing
     
     selACTION = mc.radioCollection('actionCol', q = True, sl = True)
     actionALL = {'idleRadio' : 1, 'walkRadio' : 2, 'runRadio' : 3}
@@ -437,10 +453,12 @@ def ApplyButton():
     
     fromFrameNum = mc.intField('fromField', q = True, v = True)
     
+    IDLEposing = mc.checkBox('SetStartPose', q = True, value = True)
+    
     if(actionAnim == 1):
         toFrameNum = mc.intField('toField', q = True, v = True)
     else:
-        stepCheck = mc.checkBox('Number', q = True, value = True)
+        stepCheck = mc.checkBox('NumberOfSteps', q = True, value = True)
         if not(stepCheck):
             toFrameNum = mc.intField('toField', q = True, v = True)
         else:
@@ -472,29 +490,32 @@ def RadioFPSCommand(fps):
     mc.intField('fpsField', e = True, value = fpsALL.get(selFPS))
 
 def IdleON():
-    mc.checkBox('Number', e = True, enable = False)
+    mc.checkBox('NumberOfSteps', e = True, enable = False)
     mc.intField('stepField', e = True, enable = False)
     mc.intField('toField', e = True, enable = True)
+    mc.checkBox('SetStartPose', e = True, enable = True)
 
 def WalkON():
-    mc.checkBox('Number', e = True, enable = True)
-    a = mc.checkBox('Number', q = True, value = True)
+    mc.checkBox('NumberOfSteps', e = True, enable = True)
+    a = mc.checkBox('NumberOfSteps', q = True, value = True)
     if(a):
         mc.intField('stepField', e = True, enable = True)
         mc.intField('toField', e = True, enable = False)
     else:
         mc.intField('stepField', e = True, enable = False)
         mc.intField('toField', e = True, enable = True)
+    mc.checkBox('SetStartPose', e = True, enable = False)
 
 def RunON():
-    mc.checkBox('Number', e = True, enable = True)
-    a = mc.checkBox('Number', q = True, value = True)
+    mc.checkBox('NumberOfSteps', e = True, enable = True)
+    a = mc.checkBox('NumberOfSteps', q = True, value = True)
     if(a):
         mc.intField('stepField', e = True, enable = True)
         mc.intField('toField', e = True, enable = False)
     else:
         mc.intField('stepField', e = True, enable = False)
         mc.intField('toField', e = True, enable = True)
+    mc.checkBox('SetStartPose', e = True, enable = False)
 
 def checkStepsON():
     mc.intField('stepField', e = True, enable = True)
@@ -504,6 +525,11 @@ def checkStepsOFF():
     mc.intField('stepField', e = True, enable = False)
     mc.intField('toField', e = True, enable = True)
 
+def startPoseON():
+    print 'startposeON'
+
+def startPoseOFF():
+    print 'startposeOFF'
 
 ###WINDOW###
 if(mc.window('AnimationPreset', q = True, exists = True)):
@@ -559,10 +585,10 @@ mc.intField('toField', value = 0, w = 40)
 
 mc.separator(p = glavni, style = 'none', h = 10)
 
-mc.rowColumnLayout(p = glavni, nc=4, cw = ([1,195], [2, 66], [3, 55]))
+mc.rowColumnLayout(p = glavni, nc=4, cw = ([1,100], [2,95], [3, 104]))
 mc.separator(style = 'none', h = 20)
-mc.checkBox('Number', onCommand = 'checkStepsON()', offCommand = 'checkStepsOFF()')
-mc.text(l = 'of steps:')
+mc.checkBox('SetStartPose', onCommand = 'startPoseON()', offCommand = 'startPoseOFF()', enable = False, value = True)
+mc.checkBox('NumberOfSteps', onCommand = 'checkStepsON()', offCommand = 'checkStepsOFF()')
 mc.intField('stepField', w = 25, value = 4, min = 1, enable = False)
 
 mc.separator(p = glavni, style = 'double', h = 20)
