@@ -14,13 +14,13 @@ IDLEposing = True
 
 #GLOBAL RIG VARIABLES#
 spineCount = 3
-ikLegs = True  
-fkLegs = True
-ikArms = True
-fkArms = True
-thumb = True
-iFace = True
-includeHair = True
+ikLegs = False  
+fkLegs = False
+ikArms = False
+fkArms = False
+thumb = False
+iFace = False
+includeHair = False
 fingerCount = 5
 
 
@@ -73,23 +73,15 @@ def Names():
     #'CTRL_' + side + shoulder
     shoulder = '_Shoulder'
     
-    #FK - fkLegs, fkArms
+    #FK - fkArms
     #'CTRL_FK_'+ side + fkPart
     if(fkArms):
         upArm = '_UpperArm'
         lowArm = '_LowerArm'
         wrist = '_Wrist'
-    if(fkLegs):
-        thigh = '_Thigh'
-        knee = '_Knee'##mozda ne treba
-        foot = '_Foot'##mozda ne treba
-        toes = '_Toes'##mozda ne treba
     
-    #IK - ikLegs, ikArms
+    #IK - ikArms
     #'CTRL_' + side + ikPart
-    if(ikArms):
-        ikHand = '_IK_Hand'##mozda ne treba
-        ikElbow = '_IK_Elbow_Twist'##mozda ne treba
     if(ikLegs):
         ikFoot = '_IK_Foot'
         ikKnee = '_IK_Knee_Twist'
@@ -108,7 +100,8 @@ def Names():
     if(iFace):
         lowEyeLid = '_LowerEyeLid'
         upEyeLid = '_UpperEyeLid'
-    
+
+
 
 
 #IDLE START POSE SETTING#    
@@ -154,37 +147,32 @@ def IDLEpose():
     
     sides = ['L', 'R']
     
-    if(ikLegs):
-        if(fkLegs):
-            mc.setAttr('CTRL_R_LegSwitch.R_IK', 1)
-            mc.setAttr('CTRL_L_LegSwitch.L_IK', 1)
-        ikFootT = [[-0.051,0,-0.005], [-0.077,0,0.069]]
-        ikFootR = [[0,8.609,0], [0,0,0]]
-        ikKneeT = [[0.091,0,0.044], [-0.11,0,0.103]]
-        for k, side in enumerate(sides):
-            mc.move(ikFootT[k][0]*LEGconst, ikFootT[k][1]*LEGconst, ikFootT[k][2]*LEGconst, 'CTRL_' + side + ikFoot, wd = True)
-            mc.rotate(ikFootR[k][0],ikFootR[k][1],ikFootR[k][2], 'CTRL_' + side + ikFoot)
-            mc.move(ikKneeT[k][0]*LEGconst, ikKneeT[k][1]*LEGconst, ikKneeT[k][2]*LEGconst, 'CTRL_' + side + ikKnee)
-    else:
-        print 'postaviti za FK noge idle pozu'
+    if(fkLegs):
+        mc.setAttr('CTRL_R_LegSwitch.R_IK', 1)
+        mc.setAttr('CTRL_L_LegSwitch.L_IK', 1)
+    ikFootT = [[-0.051,0,-0.005], [-0.077,0,0.069]]
+    ikFootR = [[0,8.609,0], [0,0,0]]
+    ikKneeT = [[0.091,0,0.044], [-0.11,0,0.103]]
+    for k, side in enumerate(sides):
+        mc.move(ikFootT[k][0]*LEGconst, ikFootT[k][1]*LEGconst, ikFootT[k][2]*LEGconst, 'CTRL_' + side + ikFoot, wd = True)
+        mc.rotate(ikFootR[k][0],ikFootR[k][1],ikFootR[k][2], 'CTRL_' + side + ikFoot)
+        mc.move(ikKneeT[k][0]*LEGconst, ikKneeT[k][1]*LEGconst, ikKneeT[k][2]*LEGconst, 'CTRL_' + side + ikKnee)
+    
     
     shoulderR = [[0,0,-20.988],[-0.151,-0.069,8.229]]
     mc.rotate(shoulderR[k][0],shoulderR[k][1],shoulderR[k][2], 'CTRL_' + side + shoulder)
     
-    if(fkArms):
-        if(ikArms):
-            mc.setAttr('CTRL_R_ArmSwitch.R_IK', 0)
-            mc.setAttr('CTRL_L_ArmSwitch.L_IK', 0)
-        upArmR = [[0,-7.371,-77.057], [-5.46,0.228,67.417]]
-        lowArmR = [[17.739,-6.89,-16.601], [35.176,12.024,15.135]]
-        wristR = [[6.75,3.337,1.234], [12.858,-6.904,5.545]]
-        for k, side in enumerate(sides):
-            mc.rotate(upArmR[k][0],upArmR[k][1],upArmR[k][2], 'CTRL_FK_'+ side + upArm)
-            mc.rotate(lowArmR[k][0],lowArmR[k][1],lowArmR[k][2], 'CTRL_FK_'+ side + lowArm)
-            mc.rotate(wristR[k][0],wristR[k][1],wristR[k][2], 'CTRL_FK_'+ side + wrist)
-    else:
-        print 'postaviti za IK ruke idle pozu'
-        ############################### ------------> do not allow preset animations if there is no IK, or add IK system if there is no <---------##############################################
+    if(ikArms):
+        mc.setAttr('CTRL_R_ArmSwitch.R_IK', 0)
+        mc.setAttr('CTRL_L_ArmSwitch.L_IK', 0)
+    upArmR = [[0,-7.371,-77.057], [-5.46,0.228,67.417]]
+    lowArmR = [[17.739,-6.89,-16.601], [35.176,12.024,15.135]]
+    wristR = [[6.75,3.337,1.234], [12.858,-6.904,5.545]]
+    for k, side in enumerate(sides):
+        mc.rotate(upArmR[k][0],upArmR[k][1],upArmR[k][2], 'CTRL_FK_'+ side + upArm)
+        mc.rotate(lowArmR[k][0],lowArmR[k][1],lowArmR[k][2], 'CTRL_FK_'+ side + lowArm)
+        mc.rotate(wristR[k][0],wristR[k][1],wristR[k][2], 'CTRL_FK_'+ side + wrist)
+    
     
     if(thumb):
         thumbR = [[[27.875,9.928,27.85],[4.502,15.413,16.003],[-29.88,17.255,-9.496]], [[3.999,-26.379,-8.897],[3.741,-16.734,-8.196],[-9.229,-26.379,-8.897]]]
@@ -532,72 +520,103 @@ def startPoseOFF():
     print 'startposeOFF'
 
 ###WINDOW###
-if(mc.window('AnimationPreset', q = True, exists = True)):
-    mc.deleteUI('AnimationPreset')
-mc.window('AnimationPreset', h = 250, w = 350, s = False)
+def ANIMpresetWindow():
+    if(mc.window('AnimationPreset', q = True, exists = True)):
+        mc.deleteUI('AnimationPreset')
+    mc.window('AnimationPreset', h = 250, w = 350, s = False)
 
-glavni = mc.rowColumnLayout(nc=1, cw = [1,350])
+    glavni = mc.rowColumnLayout(nc=1, cw = [1,350])
 
-mc.separator(p = glavni, style = 'none', h = 10)
-mc.text(l = 'ANIMATION PRESET', h = 40)
+    mc.separator(p = glavni, style = 'none', h = 10)
+    mc.text(l = 'ANIMATION PRESET', h = 40)
 
-mc.separator(p = glavni, style = 'double', h = 20)
+    mc.separator(p = glavni, style = 'double', h = 20)
 
-mc.rowColumnLayout(p = glavni, nc=5, cw = ([1,55], [2, 20], [3, 100], [4,100]))
-mc.text(l = 'ACTION', h = 20)
-mc.separator(style = 'none', w = 10)
-mc.radioCollection('actionCol')
-mc.radioButton('idleRadio', label = 'Idle', onCommand = 'IdleON()')
-mc.radioButton('walkRadio', label= 'Walk', onCommand = 'WalkON()', sl = True)
-mc.radioButton('runRadio', label= 'Run', onCommand = 'RunON()')
+    mc.rowColumnLayout(p = glavni, nc=5, cw = ([1,55], [2, 20], [3, 100], [4,100]))
+    mc.text(l = 'ACTION', h = 20)
+    mc.separator(style = 'none', w = 10)
+    mc.radioCollection('actionCol')
+    mc.radioButton('idleRadio', label = 'Idle', onCommand = 'IdleON()')
+    mc.radioButton('walkRadio', label= 'Walk', onCommand = 'WalkON()', sl = True)
+    mc.radioButton('runRadio', label= 'Run', onCommand = 'RunON()')
 
-mc.separator(p = glavni, style = 'double', h = 20)
+    mc.separator(p = glavni, style = 'double', h = 20)
 
-mc.rowColumnLayout(p = glavni, nc=4, cw = ([1,110], [2, 40], [3,50]))
-mc.separator(style = 'none')
-mc.text(l = 'FPS')
-mc.intField('fpsField', w = 15, v = 24, min = 15, max = 60, cc = 'intFieldCommand()')
-mc.separator(style = 'none')
+    mc.rowColumnLayout(p = glavni, nc=4, cw = ([1,110], [2, 40], [3,50]))
+    mc.separator(style = 'none')
+    mc.text(l = 'FPS')
+    mc.intField('fpsField', w = 15, v = 24, min = 15, max = 60, cc = 'intFieldCommand()')
+    mc.separator(style = 'none')
 
-mc.rowColumnLayout(p = glavni, nc=5, cw = ([1,20], [2, 80], [3,80], [4,80]))
-mc.radioCollection('fpsCol')
-mc.separator(style = 'none')
-mc.radioButton('game', l = 'Game: 15', onCommand = 'RadioFPSCommand("game")')
-mc.radioButton('film', l = 'Film: 24', sl = True, onCommand = 'RadioFPSCommand("film")')
-mc.radioButton('pal', l = 'Pal: 25', onCommand = 'RadioFPSCommand("pal")')
-mc.radioButton('ntsc', l = 'Ntsc: 30', onCommand = 'RadioFPSCommand("ntsc")')
+    mc.rowColumnLayout(p = glavni, nc=5, cw = ([1,20], [2, 80], [3,80], [4,80]))
+    mc.radioCollection('fpsCol')
+    mc.separator(style = 'none')
+    mc.radioButton('game', l = 'Game: 15', onCommand = 'RadioFPSCommand("game")')
+    mc.radioButton('film', l = 'Film: 24', sl = True, onCommand = 'RadioFPSCommand("film")')
+    mc.radioButton('pal', l = 'Pal: 25', onCommand = 'RadioFPSCommand("pal")')
+    mc.radioButton('ntsc', l = 'Ntsc: 30', onCommand = 'RadioFPSCommand("ntsc")')
 
-mc.rowColumnLayout(p = glavni, nc=5, cw = ([1,40], [2, 80], [3,80], [4,80]))
-mc.separator(style = 'none')
-mc.radioButton('show', l = 'Show: 48', onCommand = 'RadioFPSCommand("show")')
-mc.radioButton('palf', l = 'Palf: 50', onCommand = 'RadioFPSCommand("palf")')
-mc.radioButton('ntscf', l = 'Ntscf: 60', onCommand = 'RadioFPSCommand("ntscf")')
-mc.separator(style = 'none')
+    mc.rowColumnLayout(p = glavni, nc=5, cw = ([1,40], [2, 80], [3,80], [4,80]))
+    mc.separator(style = 'none')
+    mc.radioButton('show', l = 'Show: 48', onCommand = 'RadioFPSCommand("show")')
+    mc.radioButton('palf', l = 'Palf: 50', onCommand = 'RadioFPSCommand("palf")')
+    mc.radioButton('ntscf', l = 'Ntscf: 60', onCommand = 'RadioFPSCommand("ntscf")')
+    mc.separator(style = 'none')
 
-mc.separator(style = 'none', p = glavni, h = 20)
-mc.rowColumnLayout(p = glavni, nc=6, cw = ([1,70], [2, 80], [3,40], [4,20], [5, 60]))
-mc.text(l = 'DURATION', h = 20)
-mc.text(l = 'From Frame:')
-mc.intField('fromField', value = 0)
-mc.separator(style = 'none')
-mc.text(l = 'To Frame:')
-mc.intField('toField', value = 0, w = 40)
+    mc.separator(style = 'none', p = glavni, h = 20)
+    mc.rowColumnLayout(p = glavni, nc=6, cw = ([1,70], [2, 80], [3,40], [4,20], [5, 60]))
+    mc.text(l = 'DURATION', h = 20)
+    mc.text(l = 'From Frame:')
+    mc.intField('fromField', value = 0)
+    mc.separator(style = 'none')
+    mc.text(l = 'To Frame:')
+    mc.intField('toField', value = 0, w = 40)
 
-mc.separator(p = glavni, style = 'none', h = 10)
+    mc.separator(p = glavni, style = 'none', h = 10)
 
-mc.rowColumnLayout(p = glavni, nc=4, cw = ([1,100], [2,95], [3, 104]))
-mc.separator(style = 'none', h = 20)
-mc.checkBox('SetStartPose', onCommand = 'startPoseON()', offCommand = 'startPoseOFF()', enable = False, value = True)
-mc.checkBox('NumberOfSteps', onCommand = 'checkStepsON()', offCommand = 'checkStepsOFF()')
-mc.intField('stepField', w = 25, value = 4, min = 1, enable = False)
+    mc.rowColumnLayout(p = glavni, nc=4, cw = ([1,100], [2,95], [3, 104]))
+    mc.separator(style = 'none', h = 20)
+    mc.checkBox('SetStartPose', onCommand = 'startPoseON()', offCommand = 'startPoseOFF()', enable = False, value = True)
+    mc.checkBox('NumberOfSteps', onCommand = 'checkStepsON()', offCommand = 'checkStepsOFF()')
+    mc.intField('stepField', w = 25, value = 4, min = 1, enable = False)
 
-mc.separator(p = glavni, style = 'double', h = 20)
+    mc.separator(p = glavni, style = 'double', h = 20)
 
-mc.rowColumnLayout(p = glavni, nc=3, cw = ([1,115], [2, 120]))
-mc.separator(style = 'none', h = 20)
-mc.button(l = 'Apply', c = 'ApplyButton()')
-mc.separator(style = 'none')
+    mc.rowColumnLayout(p = glavni, nc=3, cw = ([1,115], [2, 120]))
+    mc.separator(style = 'none', h = 20)
+    mc.button(l = 'Apply', c = 'ApplyButton()')
+    mc.separator(style = 'none')
 
-mc.separator(p = glavni, style = 'none', h = 10)
+    mc.separator(p = glavni, style = 'none', h = 10)
 
-mc.showWindow('AnimationPreset')
+    mc.showWindow('AnimationPreset')
+
+if((mc.objExists('BN_FK_L_UpperArm')) and (mc.objExists('BN_IK_L_Thigh'))):
+    fkArms = True
+    ikLegs = True
+    
+    if(mc.objExists('BN_IK_L_UpperArm')):
+        ikArms = True
+    
+    if(mc.objExists('BN_FK_L_Thigh')):
+        fkLegs = True
+
+    if(mc.objExists('BN_F_Head_Dummy')):
+        iFace = True
+
+    if(mc.objExists('CTRL_Hair')):
+        includeHair = True
+
+    if(mc.objExists('BN_L_Finger_Thumb_1')):
+        thumb = True
+    
+    s = mc.ls('BN_Spine_*', type = 'joint')
+    spineCount = len(s)
+    
+    f = mc.ls('BN_L_Finger_*', type = 'joint')
+    fingerCount = len(f)/4
+    
+    ANIMpresetWindow()
+else:
+    mc.confirmDialog(title = 'Error!', message = 'There is no FK arms or IK legs system', icon = 'critical')
+
